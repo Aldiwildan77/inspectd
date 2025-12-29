@@ -1,0 +1,29 @@
+# <type>[optional scope]: <description>
+#
+# [optional body]
+#
+# [optional footer(s)]
+#
+# Types:
+#   feat:     A new feature
+#   fix:      A bug fix
+#   docs:     Documentation only changes
+#   style:    Changes that do not affect the meaning of the code
+#   refactor: A code change that neither fixes a bug nor adds a feature
+#   perf:     A code change that improves performance
+#   test:     Adding missing tests or correcting existing tests
+#   build:    Changes that affect the build system or external dependencies
+#   ci:       Changes to CI configuration files and scripts
+#   chore:    Other changes that don't modify src or test files
+#   revert:   Reverts a previous commit
+#
+# Examples:
+#   feat: add user authentication
+#   fix(api): resolve memory leak in request handler
+#   feat(parser)!: send an email to the customer when a product is shipped
+#   fix: prevent racing of requests
+#
+#   BREAKING CHANGE: environment variables now take precedence over config files
+#
+# <type>[optional scope]: <description>
+
