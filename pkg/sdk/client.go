@@ -51,7 +51,7 @@ func (c *Client) CollectSnapshot() (*types.Snapshot, error) {
 		Timestamp: time.Now().UTC().Format(time.RFC3339Nano),
 		Runtime: &types.RuntimeInfo{
 			GoVersion:     runtimeInfo.GoVersion,
-			NumGoroutines:  runtimeInfo.NumGoroutines,
+			NumGoroutines: runtimeInfo.NumGoroutines,
 			GOMAXPROCS:    runtimeInfo.GOMAXPROCS,
 			NumCPU:        runtimeInfo.NumCPU,
 			UptimeSeconds: runtimeInfo.Uptime,
@@ -126,4 +126,3 @@ func (c *Client) QueryRecent(ctx context.Context, limit int) ([]*types.Snapshot,
 func (c *Client) Close() error {
 	return c.storage.Close()
 }
-

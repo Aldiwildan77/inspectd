@@ -4,6 +4,8 @@
 
 The inspectd SDK provides a programmatic interface for collecting and storing Go runtime snapshots. It is designed to be easy to understand and integrate, especially for AI agents and automation systems.
 
+> **For Production Deployments**: See [PRODUCTION.md](PRODUCTION.md) for production-ready storage backends, Kubernetes configuration, and best practices.
+
 ## Quick Start
 
 ### Installation
@@ -101,10 +103,32 @@ client := sdk.NewClient(memStorage)
 ```
 
 **Characteristics**:
+
 - Fast and simple
 - Data lost on process exit
 - Thread-safe
 - No external dependencies
+
+> **⚠️ Production Warning**: Use `BoundedMemoryStorage` instead for production to prevent OOM kills.
+
+### Bounded Memory Storage (Production-Ready)
+
+**Use Case**: Production caching with size limits
+
+```go
+// Limit to 1000 snapshots to prevent unbounded growth
+memStorage := storage.NewBoundedMemoryStorage(1000)
+defer memStorage.Close()
+
+client := sdk.NewClient(memStorage)
+```
+
+**Characteristics**:
+
+- Automatic eviction of oldest snapshots
+- Prevents OOM in containers
+- Thread-safe
+- Production-safe
 
 ### File Storage
 
@@ -121,10 +145,83 @@ client := sdk.NewClient(fileStorage)
 ```
 
 **Characteristics**:
+
 - Each snapshot stored as a JSON file
 - Files named by timestamp
 - Persistent across process restarts
 - Human-readable JSON format
+
+> **⚠️ Production Warning**: Use `ManagedFileStorage` instead for production to prevent disk space issues.
+
+### Managed File Storage (Production-Ready)
+
+**Use Case**: Production file-based storage with automatic cleanup
+
+```go
+fileStorage, err := storage.NewManagedFileStorage("./snapshots", storage.ManagedFileStorageConfig{
+    MaxFiles:       1000,              // Maximum number of files
+    MaxAge:         7 * 24 * time.Hour, // Retain for 7 days
+    CleanupInterval: 1 * time.Hour,     // Cleanup every hour
+})
+defer fileStorage.Close()
+
+client := sdk.NewClient(fileStorage)
+```
+
+**Characteristics**:
+
+- Automatic cleanup based on age and count
+- Background cleanup goroutine
+- Prevents disk space exhaustion
+- Production-safe
+
+### Database Storage (Production-Ready)
+
+**Use Case**: Production environments requiring queryability
+
+```go
+dbStorage, err := storage.NewDatabaseStorage(storage.DatabaseStorageConfig{
+    Driver:        "postgres",
+    DSN:           os.Getenv("DATABASE_URL"),
+    TableName:     "inspectd_snapshots",
+    MaxConnections: 10,
+})
+defer dbStorage.Close()
+
+client := sdk.NewClient(dbStorage)
+```
+
+**Characteristics**:
+
+- Scalable storage
+- SQL query support
+- Transaction support
+- Automatic table creation
+- Supports PostgreSQL, MySQL, and other SQL databases
+
+### Cloud Object Storage (Production-Ready)
+
+**Use Case**: Cloud-native deployments, long-term storage
+
+```go
+objStorage, err := storage.NewCloudObjectStorage(storage.CloudObjectStorageConfig{
+    Client:        s3Client,           // Your S3/GCS/Azure client
+    Bucket:        "my-snapshots-bucket",
+    Prefix:        "snapshots/",
+    MaxAge:        30 * 24 * time.Hour, // 30 days retention
+    CleanupInterval: 1 * time.Hour,
+})
+defer objStorage.Close()
+
+client := sdk.NewClient(objStorage)
+```
+
+**Characteristics**:
+
+- Scalable and durable
+- Automatic cleanup
+- Cloud-native
+- Works with S3, GCS, Azure Blob, etc.
 
 ### Custom Storage
 
@@ -169,6 +266,7 @@ client := sdk.NewClient(myStorage)
 Creates a new SDK client with the specified storage backend.
 
 **Parameters**:
+
 - `storage`: Any implementation of `storage.Storage` interface
 
 **Returns**: A new `Client` instance
@@ -178,10 +276,12 @@ Creates a new SDK client with the specified storage backend.
 Collects a runtime snapshot from the current Go process.
 
 **Returns**:
+
 - `*types.Snapshot`: The collected snapshot
 - `error`: Any error that occurred during collection
 
 **Example**:
+
 ```go
 snapshot, err := client.CollectSnapshot()
 if err != nil {
@@ -195,11 +295,13 @@ fmt.Printf("Goroutines: %d\n", snapshot.Goroutines.TotalCount)
 Collects a snapshot and stores it in one operation. This is the most common use case.
 
 **Parameters**:
+
 - `ctx`: Context for cancellation/timeout
 
 **Returns**: Error if collection or storage fails
 
 **Example**:
+
 ```go
 ctx := context.Background()
 if err := client.CollectAndStore(ctx); err != nil {
@@ -212,12 +314,14 @@ if err := client.CollectAndStore(ctx); err != nil {
 Stores an existing snapshot to the storage backend.
 
 **Parameters**:
+
 - `ctx`: Context for cancellation/timeout
 - `snapshot`: The snapshot to store
 
 **Returns**: Error if storage fails
 
 **Example**:
+
 ```go
 snapshot, _ := client.CollectSnapshot()
 err := client.Store(ctx, snapshot)
@@ -228,12 +332,14 @@ err := client.Store(ctx, snapshot)
 Stores multiple snapshots in a single operation. More efficient than multiple `Store` calls.
 
 **Parameters**:
+
 - `ctx`: Context for cancellation/timeout
 - `snapshots`: Slice of snapshots to store
 
 **Returns**: Error if storage fails
 
 **Example**:
+
 ```go
 snapshots := []*types.Snapshot{snapshot1, snapshot2, snapshot3}
 err := client.StoreBatch(ctx, snapshots)
@@ -244,12 +350,14 @@ err := client.StoreBatch(ctx, snapshots)
 Queries stored snapshots with flexible filtering options.
 
 **Parameters**:
+
 - `ctx`: Context for cancellation/timeout
 - `opts`: Query options (time range, limit, ordering)
 
 **Returns**: Slice of matching snapshots, or error
 
 **Example**:
+
 ```go
 opts := &storage.QueryOptions{
     Limit:   10,
@@ -263,12 +371,14 @@ snapshots, err := client.Query(ctx, opts)
 Convenience method to get the most recent snapshots.
 
 **Parameters**:
+
 - `ctx`: Context for cancellation/timeout
 - `limit`: Maximum number of snapshots to return (0 = no limit)
 
 **Returns**: Slice of recent snapshots, or error
 
 **Example**:
+
 ```go
 snapshots, err := client.QueryRecent(ctx, 10)
 ```
@@ -278,6 +388,7 @@ snapshots, err := client.QueryRecent(ctx, 10)
 Convenience method to query snapshots within a time range.
 
 **Parameters**:
+
 - `ctx`: Context for cancellation/timeout
 - `startTime`: Start of time range (inclusive)
 - `endTime`: End of time range (inclusive)
@@ -286,6 +397,7 @@ Convenience method to query snapshots within a time range.
 **Returns**: Slice of matching snapshots, or error
 
 **Example**:
+
 ```go
 start := time.Now().Add(-1 * time.Hour)
 end := time.Now()
@@ -299,6 +411,7 @@ Closes the storage backend and releases resources. Always call this when done.
 **Returns**: Error if cleanup fails
 
 **Example**:
+
 ```go
 defer client.Close()
 ```
@@ -613,4 +726,3 @@ func (d *DatabaseStorage) Store(ctx context.Context, snapshot *types.Snapshot) e
 ## Support
 
 For issues, questions, or contributions, please refer to the project repository.
-
