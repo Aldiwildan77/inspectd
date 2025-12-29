@@ -17,12 +17,25 @@ type Client struct {
 	storage storage.Storage
 }
 
-// NewClient creates a new SDK client with the provided storage backend.
-// The storage can be any implementation of the storage.Storage interface.
-func NewClient(storage storage.Storage) *Client {
-	return &Client{
-		storage: storage,
+// Option is a function that configures a Client.
+type Option func(*Client)
+
+// WithStorage sets the storage backend for the client.
+// This is a required option - the client will not function without storage.
+func WithStorage(s storage.Storage) Option {
+	return func(c *Client) {
+		c.storage = s
 	}
+}
+
+// NewClient creates a new SDK client with the provided options.
+// At minimum, WithStorage must be provided to configure the storage backend.
+func NewClient(opts ...Option) *Client {
+	c := &Client{}
+	for _, opt := range opts {
+		opt(c)
+	}
+	return c
 }
 
 // CollectSnapshot collects a new runtime snapshot from the current process.
