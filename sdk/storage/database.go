@@ -230,7 +230,6 @@ func (d *DatabaseStorage) Query(ctx context.Context, opts *QueryOptions) ([]*typ
 			query += " AND timestamp <= ?"
 		}
 		args = append(args, *opts.EndTime)
-		argIndex++
 	}
 
 	// Ordering
