@@ -441,13 +441,13 @@ snapshots, _ := client.QueryRecent(ctx, 10)
 
 ┌─────────────────────────────────────────┐
 │              SDK Layer                   │
-│  pkg/sdk/client.go                      │
+│  sdk/client.go                          │
 └──────────────┬──────────────────────────┘
                │
                ▼
 ┌─────────────────────────────────────────┐
 │         Storage Interface               │
-│  pkg/sdk/storage/interface.go           │
+│  sdk/storage/interface.go               │
 └──────────────┬──────────────────────────┘
                │
     ┌──────────┼──────────┬──────────────┐
@@ -463,8 +463,10 @@ snapshots, _ := client.QueryRecent(ctx, 10)
 ```
 inspectd/
 ├── cmd/
-│   └── inspectd/
-│       └── main.go          # CLI entry point
+│   ├── inspectd/
+│   │   └── main.go          # CLI entry point
+│   └── inspectd-mcp/
+│       └── main.go          # MCP server entry point
 ├── internal/
 │   ├── cli/
 │   │   └── cli.go           # CLI routing
@@ -476,30 +478,40 @@ inspectd/
 │   │   └── goroutines.go    # Goroutine metrics
 │   └── snapshot/
 │       └── snapshot.go      # Combined snapshot
-├── pkg/
-│   └── sdk/
-│       ├── client.go        # SDK client
-│       ├── types/
-│       │   └── snapshot.go  # SDK types
-│       ├── storage/
-│       │   ├── interface.go      # Storage interface
-│       │   ├── memory.go         # Basic memory storage
-│       │   ├── bounded_memory.go # Production memory storage
-│       │   ├── file.go            # Basic file storage
-│       │   ├── managed_file.go   # Production file storage
-│       │   ├── database.go       # Database storage
-│       │   └── object_storage.go # Object storage
-│       └── examples/
-│           ├── basic/            # Basic examples
-│           ├── production/      # Production examples
-│           └── custom_storage/  # Custom storage example
+├── sdk/
+│   ├── client.go            # SDK client with functional options
+│   ├── types/
+│   │   └── snapshot.go      # SDK types
+│   └── storage/
+│       ├── interface.go         # Storage interface
+│       ├── memory.go            # Basic memory storage
+│       ├── bounded_memory.go    # Production memory storage
+│       ├── file.go              # Basic file storage
+│       ├── managed_file.go      # Production file storage
+│       ├── database.go          # Database storage
+│       └── object_storage.go    # Object storage
 ├── examples/
-│   └── demo/
-│       └── main.go          # Demo program
-└── docs/
-    ├── PRD.md               # This document
-    ├── SDK.md               # SDK documentation
-    └── PRODUCTION.md         # Production guide
+│   ├── demo/
+│   │   └── main.go          # Demo program
+│   ├── README.md            # Examples documentation
+│   └── sdk/
+│       ├── basic/
+│       │   └── main.go      # Basic SDK usage example
+│       ├── custom_storage/
+│       │   └── main.go      # Custom storage implementation example
+│       ├── production/
+│       │   └── main.go      # Production storage example
+│       └── production_file/
+│           └── main.go      # Production file storage example
+├── docs/
+│   ├── PRD.md               # Product Requirements Document
+│   ├── SDK.md                # SDK documentation
+│   ├── PRODUCTION.md         # Production deployment guide
+│   └── MCP.md                # MCP integration documentation
+├── pkg/                      # Reserved for future use
+├── LICENSE                   # MIT License
+├── README.md                 # Project documentation
+└── go.mod                    # Go module definition
 ```
 
 ### 6.3 Data Models
