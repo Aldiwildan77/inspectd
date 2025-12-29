@@ -7,8 +7,8 @@ import (
 	"github.com/Aldiwildan77/inspectd/internal/goroutines"
 	"github.com/Aldiwildan77/inspectd/internal/memory"
 	"github.com/Aldiwildan77/inspectd/internal/runtimeinfo"
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/storage"
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk/storage"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // Client provides a high-level API for collecting and storing inspectd snapshots.

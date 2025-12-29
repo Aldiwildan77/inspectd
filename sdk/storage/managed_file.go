@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // ManagedFileStorage is a production-ready file storage with automatic cleanup.

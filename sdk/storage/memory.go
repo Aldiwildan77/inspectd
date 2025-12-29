@@ -5,7 +5,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // MemoryStorage is an in-memory storage implementation.

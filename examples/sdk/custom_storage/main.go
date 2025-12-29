@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk"
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/storage"
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk"
+	"github.com/Aldiwildan77/inspectd/sdk/storage"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // CustomStorage is an example of implementing a custom storage backend.

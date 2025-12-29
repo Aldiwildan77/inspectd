@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // Storage defines the interface for storing inspectd snapshots.

@@ -9,7 +9,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // FileStorage stores snapshots as individual JSON files in a directory.

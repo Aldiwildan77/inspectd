@@ -31,8 +31,8 @@ This guide covers best practices for deploying inspectd SDK in production contai
 
 ```go
 import (
-    "github.com/Aldiwildan77/inspectd/pkg/sdk"
-    "github.com/Aldiwildan77/inspectd/pkg/sdk/storage"
+    "github.com/Aldiwildan77/inspectd/sdk"
+    "github.com/Aldiwildan77/inspectd/sdk/storage"
 )
 
 // Create bounded storage with 1000 snapshot limit

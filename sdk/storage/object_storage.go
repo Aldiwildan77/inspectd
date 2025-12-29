@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // ObjectStorage is an interface for object storage backends (S3, GCS, Azure Blob, etc.).

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/types"
+	"github.com/Aldiwildan77/inspectd/sdk/types"
 )
 
 // DatabaseStorage stores snapshots in a SQL database.

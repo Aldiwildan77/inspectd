@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk"
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/storage"
+	"github.com/Aldiwildan77/inspectd/sdk"
+	"github.com/Aldiwildan77/inspectd/sdk/storage"
 )
 
 // Example production usage with graceful shutdown and bounded memory storage

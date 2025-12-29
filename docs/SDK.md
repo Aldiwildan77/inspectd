@@ -11,8 +11,8 @@ The inspectd SDK provides a programmatic interface for collecting and storing Go
 ### Installation
 
 ```go
-import "github.com/Aldiwildan77/inspectd/pkg/sdk"
-import "github.com/Aldiwildan77/inspectd/pkg/sdk/storage"
+import "github.com/Aldiwildan77/inspectd/sdk"
+import "github.com/Aldiwildan77/inspectd/sdk/storage"
 ```
 
 ### Basic Usage
@@ -22,8 +22,8 @@ package main
 
 import (
     "context"
-    "github.com/Aldiwildan77/inspectd/pkg/sdk"
-    "github.com/Aldiwildan77/inspectd/pkg/sdk/storage"
+    "github.com/Aldiwildan77/inspectd/sdk"
+    "github.com/Aldiwildan77/inspectd/sdk/storage"
 )
 
 func main() {

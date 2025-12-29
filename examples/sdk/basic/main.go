@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/Aldiwildan77/inspectd/pkg/sdk"
-	"github.com/Aldiwildan77/inspectd/pkg/sdk/storage"
+	"github.com/Aldiwildan77/inspectd/sdk"
+	"github.com/Aldiwildan77/inspectd/sdk/storage"
 )
 
 func main() {
