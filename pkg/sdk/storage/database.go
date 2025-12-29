@@ -287,4 +287,3 @@ func (d *DatabaseStorage) Ping(ctx context.Context) error {
 	defer cancel()
 	return d.db.PingContext(ctx)
 }
-
