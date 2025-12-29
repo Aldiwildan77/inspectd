@@ -1,4 +1,5 @@
 # Product Requirement Document (PRD)
+
 ## inspectd - Go Runtime Inspection Tool
 
 **Version:** 1.0.0  
@@ -12,6 +13,7 @@
 **inspectd** is a command-line tool designed to inspect Go runtime internals from within a running Go process. The tool provides structured, deterministic JSON output optimized for AI agent consumption and automation workflows. It is a read-only, production-safe inspection utility with minimal overhead.
 
 ### Key Characteristics
+
 - **Read-only**: No modifications to runtime behavior
 - **JSON-first**: Structured output for programmatic consumption
 - **Composable**: Designed for pipes and automation
@@ -105,16 +107,19 @@
 ### 4.2 User Personas
 
 **Persona 1: AI Agent**
+
 - Needs: Structured JSON output, deterministic format
 - Goals: Parse runtime state, make decisions based on metrics
 - Constraints: Cannot handle human-readable text
 
 **Persona 2: Automation Script**
+
 - Needs: Command-line interface, exit codes, pipe-friendly
 - Goals: Integrate into monitoring workflows
 - Constraints: Must be scriptable and reliable
 
 **Persona 3: Developer**
+
 - Needs: Quick insights, easy to use
 - Goals: Understand runtime state during development
 - Constraints: Should not impact running application
@@ -130,6 +135,7 @@
 **Description**: Reports basic Go runtime information
 
 **Output Fields**:
+
 - `go_version` (string): Go version string
 - `num_goroutines` (int): Current number of goroutines
 - `gomaxprocs` (int): GOMAXPROCS setting
@@ -137,11 +143,13 @@
 - `uptime_seconds` (float64): Process uptime in seconds
 
 **Requirements**:
+
 - Must output valid JSON
 - Must use UTC timestamps
 - Must handle errors gracefully
 
 **Example Output**:
+
 ```json
 {
   "go_version": "go1.24.5",
@@ -157,6 +165,7 @@
 **Description**: Reports memory usage and garbage collection statistics
 
 **Output Fields**:
+
 - `heap_in_use_bytes` (uint64): Heap memory in use
 - `heap_allocated_bytes` (uint64): Currently allocated heap memory
 - `heap_objects` (uint64): Number of heap objects
@@ -166,11 +175,13 @@
 - `gc_cpu_fraction` (float64): Fraction of CPU time spent in GC
 
 **Requirements**:
+
 - Must read from `runtime.MemStats`
 - Must calculate GC pause from pause history
 - Must handle zero GC cycles gracefully
 
 **Example Output**:
+
 ```json
 {
   "heap_in_use_bytes": 104857600,
@@ -188,13 +199,16 @@
 **Description**: Reports goroutine count
 
 **Output Fields**:
+
 - `total_count` (int): Total number of goroutines
 
 **Requirements**:
+
 - Must use `runtime.NumGoroutine()`
 - Must output valid JSON
 
 **Example Output**:
+
 ```json
 {
   "total_count": 6
@@ -206,17 +220,20 @@
 **Description**: Combines all runtime information into a single snapshot
 
 **Output Structure**:
+
 - `timestamp` (string): RFC3339Nano formatted timestamp
 - `runtime` (object): Runtime information
 - `memory` (object): Memory information
 - `goroutines` (object): Goroutine information
 
 **Requirements**:
+
 - Must include UTC timestamp
 - Must combine all three information sources
 - Must maintain consistent structure
 
 **Example Output**:
+
 ```json
 {
   "timestamp": "2024-01-01T12:00:00.123456789Z",
@@ -245,26 +262,31 @@
 ### 5.2 Functional Requirements
 
 #### FR-1: Command-Line Interface
+
 - **Requirement**: Tool must accept commands as first argument
 - **Validation**: Invalid commands must exit with non-zero code
 - **Implementation**: `os.Args[1]` parsing in CLI module
 
 #### FR-2: JSON Output
+
 - **Requirement**: All commands must output valid JSON to stdout
 - **Validation**: Output must be parseable by standard JSON parsers
 - **Implementation**: `encoding/json` package for marshaling
 
 #### FR-3: Error Handling
+
 - **Requirement**: Errors must result in non-zero exit codes
 - **Validation**: No JSON output on error
 - **Implementation**: `os.Exit(1)` on errors
 
 #### FR-4: Read-Only Operations
+
 - **Requirement**: No modifications to runtime state
 - **Validation**: Only read operations from `runtime` package
 - **Implementation**: No write operations, no state mutations
 
 #### FR-5: No Background Processes
+
 - **Requirement**: Tool must be stateless and on-demand
 - **Validation**: No goroutines, no timers, no continuous sampling
 - **Implementation**: Single execution, immediate return
@@ -272,26 +294,31 @@
 ### 5.3 Non-Functional Requirements
 
 #### NFR-1: Performance
+
 - **Target**: Sub-millisecond execution time
 - **Measurement**: Time from command invocation to output
 - **Constraint**: Must not impact running application
 
 #### NFR-2: Resource Usage
+
 - **Target**: Minimal memory footprint
 - **Measurement**: Memory allocated during execution
 - **Constraint**: Should be negligible compared to application
 
 #### NFR-3: Dependencies
+
 - **Requirement**: Standard library only
 - **Validation**: No external package dependencies
 - **Implementation**: Only `encoding/json`, `runtime`, `time`, `os`, `fmt`
 
 #### NFR-4: Compatibility
+
 - **Requirement**: Works with all Go versions 1.18+
 - **Validation**: Tested across Go versions
 - **Implementation**: Use only stable runtime APIs
 
 #### NFR-5: Safety
+
 - **Requirement**: Production-safe operations
 - **Validation**: No unsafe operations, no panics
 - **Implementation**: Error handling, graceful degradation
@@ -358,6 +385,7 @@ inspectd/
 ### 6.3 Data Models
 
 #### RuntimeInfo
+
 ```go
 type RuntimeInfo struct {
     GoVersion     string  `json:"go_version"`
@@ -369,6 +397,7 @@ type RuntimeInfo struct {
 ```
 
 #### MemoryInfo
+
 ```go
 type MemoryInfo struct {
     HeapInUse     uint64  `json:"heap_in_use_bytes"`
@@ -382,6 +411,7 @@ type MemoryInfo struct {
 ```
 
 #### GoroutineInfo
+
 ```go
 type GoroutineInfo struct {
     TotalCount int `json:"total_count"`
@@ -389,6 +419,7 @@ type GoroutineInfo struct {
 ```
 
 #### Snapshot
+
 ```go
 type Snapshot struct {
     Timestamp  string                    `json:"timestamp"`
@@ -405,22 +436,26 @@ type Snapshot struct {
 **Pattern**: `inspectd <command>`
 
 **Commands**:
+
 - `runtime`: Get runtime information
 - `memory`: Get memory information
 - `goroutines`: Get goroutine count
 - `snapshot`: Get combined snapshot
 
 **Exit Codes**:
+
 - `0`: Success
 - `1`: Error (invalid command, collection failure, JSON marshaling error)
 
 **Output**:
+
 - **Success**: Valid JSON to stdout
 - **Error**: No output, exit code 1
 
 ### 6.5 Implementation Details
 
 #### Runtime Information Collection
+
 - Uses `runtime.Version()` for Go version
 - Uses `runtime.NumGoroutine()` for goroutine count
 - Uses `runtime.GOMAXPROCS(0)` for GOMAXPROCS (read-only)
@@ -428,15 +463,18 @@ type Snapshot struct {
 - Tracks process start time for uptime calculation
 
 #### Memory Information Collection
+
 - Uses `runtime.ReadMemStats()` to read memory statistics
 - Calculates last GC pause from `PauseNs` circular buffer
 - Handles zero GC cycles (returns 0 for pause time)
 
 #### Goroutine Information Collection
+
 - Uses `runtime.NumGoroutine()` for count
 - Simple wrapper for consistency with other commands
 
 #### Snapshot Collection
+
 - Collects all three information sources
 - Combines into single structure
 - Adds UTC timestamp in RFC3339Nano format
@@ -688,6 +726,7 @@ def get_runtime_snapshot():
 ## 14. Version History
 
 ### Version 1.0.0 (Current)
+
 - Initial implementation
 - All core commands (runtime, memory, goroutines, snapshot)
 - JSON output format
@@ -708,6 +747,7 @@ def get_runtime_snapshot():
 ## Appendix A: JSON Schema
 
 ### Runtime Info Schema
+
 ```json
 {
   "type": "object",
@@ -723,6 +763,7 @@ def get_runtime_snapshot():
 ```
 
 ### Memory Info Schema
+
 ```json
 {
   "type": "object",
@@ -740,6 +781,7 @@ def get_runtime_snapshot():
 ```
 
 ### Goroutine Info Schema
+
 ```json
 {
   "type": "object",
@@ -751,6 +793,7 @@ def get_runtime_snapshot():
 ```
 
 ### Snapshot Schema
+
 ```json
 {
   "type": "object",
@@ -767,4 +810,3 @@ def get_runtime_snapshot():
 ---
 
 **Document End**
-
