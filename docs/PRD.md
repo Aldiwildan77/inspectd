@@ -275,6 +275,43 @@
 }
 ```
 
+#### 5.1.5 SDK Features
+
+**Description**: Programmatic API for collecting and storing runtime snapshots
+
+**Core Components**:
+
+1. **SDK Client**: High-level API for snapshot collection and storage
+2. **Storage Interface**: Pluggable storage backend system
+3. **Production Storage Backends**:
+   - **BoundedMemoryStorage**: In-memory storage with size limits and automatic eviction
+   - **ManagedFileStorage**: File-based storage with cleanup and retention policies
+   - **DatabaseStorage**: SQL database storage (PostgreSQL, MySQL, etc.)
+   - **CloudObjectStorage**: Object storage interface (S3, GCS, Azure Blob, etc.)
+
+**Requirements**:
+
+- Must provide thread-safe operations
+- Must support context timeouts for all operations
+- Must implement graceful shutdown
+- Must include resource management (limits, cleanup)
+- Must be production-safe for container/pod environments
+
+**Example Usage**:
+
+```go
+// Bounded memory storage (production-safe)
+memStorage := storage.NewBoundedMemoryStorage(1000)
+client := sdk.NewClient(memStorage)
+
+// Collect and store
+ctx := context.Background()
+client.CollectAndStore(ctx)
+
+// Query recent snapshots
+snapshots, _ := client.QueryRecent(ctx, 10)
+```
+
 ### 5.2 Functional Requirements
 
 #### FR-1: Command-Line Interface
