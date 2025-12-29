@@ -43,12 +43,14 @@ client := sdk.NewClient(memStorage)
 ```
 
 **Features**:
+
 - Automatic eviction of oldest snapshots
 - Thread-safe
 - No disk I/O
 - Memory usage bounded
 
 **Limitations**:
+
 - Data lost on pod restart
 - Limited by available memory
 
@@ -68,12 +70,14 @@ client := sdk.NewClient(fileStorage)
 ```
 
 **Features**:
+
 - Automatic cleanup based on age and count
 - Persistent across restarts (with persistent volumes)
 - Background cleanup goroutine
 - Disk space management
 
 **Kubernetes Setup**:
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -117,12 +121,14 @@ client := sdk.NewClient(dbStorage)
 ```
 
 **Features**:
+
 - Scalable storage
 - SQL query support
 - Transaction support for batch operations
 - Automatic table creation
 
 **Database Schema** (auto-created):
+
 ```sql
 CREATE TABLE inspectd_snapshots (
     id SERIAL PRIMARY KEY,
@@ -173,6 +179,7 @@ client := sdk.NewClient(objStorage)
 ```
 
 **Features**:
+
 - Scalable and durable
 - Automatic cleanup
 - Cloud-native
@@ -419,4 +426,3 @@ See `pkg/sdk/examples/production/` for complete production-ready examples.
 - [SDK Documentation](SDK.md)
 - [Examples](../pkg/sdk/examples/)
 - [PRD](PRD.md)
-

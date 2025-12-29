@@ -5,6 +5,7 @@ inspectd can be used as an MCP server, allowing AI assistants to interact with G
 ## Overview
 
 The MCP server exposes inspectd's functionality through the Model Context Protocol, enabling AI clients to:
+
 - Collect runtime snapshots
 - Query stored snapshots
 - Access runtime, memory, and goroutine information
@@ -33,6 +34,7 @@ The MCP server communicates via stdin/stdout using JSON-RPC 2.0:
 Configure your MCP client (e.g., Claude Desktop, Cursor) to use inspectd-mcp:
 
 **Claude Desktop** (`claude_desktop_config.json`):
+
 ```json
 {
   "mcpServers": {
@@ -45,6 +47,7 @@ Configure your MCP client (e.g., Claude Desktop, Cursor) to use inspectd-mcp:
 ```
 
 **Cursor** (`.cursor/mcp.json`):
+
 ```json
 {
   "mcpServers": {
@@ -66,6 +69,7 @@ Collects a runtime snapshot from the current Go process.
 **Returns**: Complete snapshot object with runtime, memory, and goroutine information
 
 **Example**:
+
 ```json
 {
   "method": "tools/call",
@@ -85,6 +89,7 @@ Collects and stores a snapshot to the storage backend.
 **Returns**: Status confirmation
 
 **Example**:
+
 ```json
 {
   "method": "tools/call",
@@ -100,11 +105,13 @@ Collects and stores a snapshot to the storage backend.
 Queries stored snapshots with optional filters.
 
 **Parameters**:
+
 - `limit` (integer, optional): Maximum number of snapshots to return (default: 10)
 
 **Returns**: Array of snapshots
 
 **Example**:
+
 ```json
 {
   "method": "tools/call",
@@ -126,6 +133,7 @@ Gets Go runtime information (version, goroutines, CPU, uptime).
 **Returns**: Runtime information object
 
 **Example**:
+
 ```json
 {
   "method": "tools/call",
@@ -145,6 +153,7 @@ Gets memory usage and GC statistics.
 **Returns**: Memory information object
 
 **Example**:
+
 ```json
 {
   "method": "tools/call",
@@ -164,6 +173,7 @@ Gets the current goroutine count.
 **Returns**: Goroutine information object
 
 **Example**:
+
 ```json
 {
   "method": "tools/call",
@@ -181,6 +191,7 @@ Gets the current goroutine count.
 The most recent runtime snapshot.
 
 **Example**:
+
 ```json
 {
   "method": "resources/read",
@@ -195,6 +206,7 @@ The most recent runtime snapshot.
 Recently collected snapshots (up to 10).
 
 **Example**:
+
 ```json
 {
   "method": "resources/read",
@@ -282,4 +294,3 @@ Then connect to your inspectd-mcp server to test tools and resources.
 - [SDK Documentation](SDK.md) - For programmatic SDK usage
 - [Production Guide](PRODUCTION.md) - For production deployment
 - [MCP Specification](https://modelcontextprotocol.io) - Official MCP documentation
-
