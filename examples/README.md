@@ -56,7 +56,7 @@ When running `inspectd memory`:
 When running `inspectd snapshot`:
 ```json
 {
-  "timestamp": "2024-01-01T12:00:00.123456789Z",
+  "timestamp": "2025-01-01T12:00:00.123456789Z",
   "runtime": {
     "go_version": "go1.24.5",
     "num_goroutines": 6,

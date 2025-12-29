@@ -220,7 +220,7 @@ Recently collected snapshots (up to 10).
 
 The MCP server implements JSON-RPC 2.0 over stdin/stdout:
 
-- **Protocol Version**: 2024-11-05
+- **Protocol Version**: 2025-11-05
 - **Transport**: stdio (stdin/stdout)
 - **Format**: JSON
 
@@ -245,7 +245,7 @@ The MCP server implements JSON-RPC 2.0 over stdin/stdout:
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "timestamp": "2024-01-01T12:00:00.123456789Z",
+    "timestamp": "2025-01-01T12:00:00.123456789Z",
     "runtime": {...},
     "memory": {...},
     "goroutines": {...}

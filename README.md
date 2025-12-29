@@ -121,7 +121,7 @@ All commands output JSON. The snapshot command provides a combined view:
 
 ```json
 {
-  "timestamp": "2024-01-01T00:00:00Z",
+  "timestamp": "2025-01-01T00:00:00Z",
   "runtime": {...},
   "memory": {...},
   "goroutines": {...}
