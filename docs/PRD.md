@@ -2,15 +2,15 @@
 
 ## inspectd - Go Runtime Inspection Tool
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Last Updated:** 2024  
-**Status:** Implemented
+**Status:** Implemented (CLI + SDK)
 
 ---
 
 ## 1. Executive Summary
 
-**inspectd** is a command-line tool designed to inspect Go runtime internals from within a running Go process. The tool provides structured, deterministic JSON output optimized for AI agent consumption and automation workflows. It is a read-only, production-safe inspection utility with minimal overhead.
+**inspectd** is a command-line tool and SDK designed to inspect Go runtime internals from within a running Go process. The tool provides structured, deterministic JSON output optimized for AI agent consumption and automation workflows. It is a read-only, production-safe inspection utility with minimal overhead.
 
 ### Key Characteristics
 
@@ -19,6 +19,8 @@
 - **Composable**: Designed for pipes and automation
 - **Production-safe**: Minimal overhead, no background processes
 - **AI-optimized**: Deterministic output format for agent ingestion
+- **SDK-enabled**: Programmatic API for collecting and storing snapshots
+- **Production-ready**: Multiple storage backends with resource management
 
 ---
 
@@ -41,12 +43,19 @@
    - Need for lightweight, on-demand inspection capabilities
    - Integration with CI/CD pipelines and automated testing
 
+4. **Production Storage Requirements**
+   - Need to store snapshots for historical analysis
+   - Container/pod environments require resource-aware storage
+   - Multiple storage backends needed for different deployment scenarios
+
 ### 2.2 Target Use Cases
 
 - **AI Agent Runtime Analysis**: Provide structured runtime data to AI agents for code analysis and debugging
 - **Automated Monitoring**: Lightweight inspection for scripts and automation tools
 - **Development Tooling**: Quick runtime checks during development
 - **Production Diagnostics**: Safe, read-only inspection in production environments
+- **Production Storage**: Store snapshots for historical analysis and trend tracking
+- **Container/Pod Deployment**: Resource-aware storage for Kubernetes and containerized environments
 
 ---
 
@@ -75,13 +84,20 @@
    - Consistent data format
    - Machine-readable error codes
 
+5. **Production Storage Support**
+   - Multiple storage backends (memory, file, database, object storage)
+   - Resource management and cleanup policies
+   - Production-safe implementations for containers/pods
+
 ### 3.2 Success Criteria
 
 - ✅ All commands output valid JSON
 - ✅ Zero runtime modifications
 - ✅ Sub-millisecond execution time
-- ✅ Standard library only (no external dependencies)
+- ✅ Standard library only (no external dependencies for CLI)
 - ✅ Comprehensive error handling
+- ✅ SDK with production-ready storage backends
+- ✅ Resource-aware storage for container/pod environments
 
 ---
 
@@ -291,6 +307,24 @@
 - **Validation**: No goroutines, no timers, no continuous sampling
 - **Implementation**: Single execution, immediate return
 
+#### FR-6: SDK Storage Interface
+
+- **Requirement**: SDK must support pluggable storage backends
+- **Validation**: All storage backends implement common interface
+- **Implementation**: `storage.Storage` interface with Store, StoreBatch, Query, Close methods
+
+#### FR-7: Production Storage Backends
+
+- **Requirement**: Must provide production-ready storage implementations
+- **Validation**: Resource limits, cleanup policies, context timeouts
+- **Implementation**: BoundedMemoryStorage, ManagedFileStorage, DatabaseStorage, CloudObjectStorage
+
+#### FR-8: Resource Management
+
+- **Requirement**: Storage backends must prevent resource exhaustion
+- **Validation**: Memory limits, disk cleanup, connection pooling
+- **Implementation**: Size limits, retention policies, automatic cleanup
+
 ### 5.3 Non-Functional Requirements
 
 #### NFR-1: Performance
@@ -322,6 +356,18 @@
 - **Requirement**: Production-safe operations
 - **Validation**: No unsafe operations, no panics
 - **Implementation**: Error handling, graceful degradation
+
+#### NFR-6: Container/Pod Compatibility
+
+- **Requirement**: Must work safely in containerized environments
+- **Validation**: Resource limits respected, graceful shutdown, no OOM risks
+- **Implementation**: Bounded storage, cleanup policies, context timeouts
+
+#### NFR-7: Storage Scalability
+
+- **Requirement**: Storage backends must scale with usage
+- **Validation**: Efficient batch operations, connection pooling, cleanup
+- **Implementation**: StoreBatch methods, connection limits, automatic cleanup
 
 ---
 
@@ -355,6 +401,24 @@
             │ runtime pkg   │
             │ encoding/json │
             └───────────────┘
+
+┌─────────────────────────────────────────┐
+│              SDK Layer                   │
+│  pkg/sdk/client.go                      │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│         Storage Interface               │
+│  pkg/sdk/storage/interface.go           │
+└──────────────┬──────────────────────────┘
+               │
+    ┌──────────┼──────────┬──────────────┐
+    ▼          ▼          ▼              ▼
+┌─────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐
+│Bounded  │ │ Managed  │ │Database  │ │Cloud Object  │
+│Memory   │ │  File    │ │ Storage  │ │  Storage    │
+└─────────┘ └──────────┘ └──────────┘ └──────────────┘
 ```
 
 ### 6.2 Module Structure
@@ -363,7 +427,7 @@
 inspectd/
 ├── cmd/
 │   └── inspectd/
-│       └── main.go          # Entry point
+│       └── main.go          # CLI entry point
 ├── internal/
 │   ├── cli/
 │   │   └── cli.go           # CLI routing
@@ -375,11 +439,30 @@ inspectd/
 │   │   └── goroutines.go    # Goroutine metrics
 │   └── snapshot/
 │       └── snapshot.go      # Combined snapshot
+├── pkg/
+│   └── sdk/
+│       ├── client.go        # SDK client
+│       ├── types/
+│       │   └── snapshot.go  # SDK types
+│       ├── storage/
+│       │   ├── interface.go      # Storage interface
+│       │   ├── memory.go         # Basic memory storage
+│       │   ├── bounded_memory.go # Production memory storage
+│       │   ├── file.go            # Basic file storage
+│       │   ├── managed_file.go   # Production file storage
+│       │   ├── database.go       # Database storage
+│       │   └── object_storage.go # Object storage
+│       └── examples/
+│           ├── basic/            # Basic examples
+│           ├── production/      # Production examples
+│           └── custom_storage/  # Custom storage example
 ├── examples/
 │   └── demo/
 │       └── main.go          # Demo program
 └── docs/
-    └── PRD.md               # This document
+    ├── PRD.md               # This document
+    ├── SDK.md               # SDK documentation
+    └── PRODUCTION.md         # Production guide
 ```
 
 ### 6.3 Data Models
@@ -639,15 +722,19 @@ def get_runtime_snapshot():
    - Stack memory information
    - GC heap size breakdown
 
-4. **Historical Tracking**
-   - Rate calculations (goroutines/sec, allocations/sec)
-   - Trend analysis
-   - Delta calculations between snapshots
+4. **Historical Tracking** ✅ (Partially Implemented)
+   - ✅ Snapshot storage and querying (via SDK)
+   - ✅ Time-range queries
+   - ⏳ Rate calculations (goroutines/sec, allocations/sec)
+   - ⏳ Trend analysis
+   - ⏳ Delta calculations between snapshots
 
-5. **Filtering and Querying**
-   - Field selection
-   - Conditional output
-   - Format options (compact vs. pretty)
+5. **Filtering and Querying** ✅ (Partially Implemented)
+   - ✅ Time-range filtering
+   - ✅ Limit and ordering
+   - ⏳ Field selection
+   - ⏳ Conditional output
+   - ⏳ Format options (compact vs. pretty)
 
 ### 10.2 Out of Scope
 
@@ -657,6 +744,25 @@ def get_runtime_snapshot():
 - Profiling capabilities
 - Debugging features
 - Human-readable output modes
+
+### 10.3 Recently Implemented (v1.1.0)
+
+1. **SDK for Programmatic Access** ✅
+   - High-level client API
+   - Snapshot collection and storage
+   - Query capabilities
+
+2. **Production Storage Backends** ✅
+   - BoundedMemoryStorage with size limits
+   - ManagedFileStorage with cleanup policies
+   - DatabaseStorage for SQL databases
+   - CloudObjectStorage interface for object storage
+
+3. **Production Deployment Support** ✅
+   - Container/pod resource management
+   - Graceful shutdown handling
+   - Context timeout support
+   - Automatic cleanup and retention policies
 
 ---
 
@@ -675,6 +781,9 @@ def get_runtime_snapshot():
 - ✅ **Output Consistency**: Deterministic JSON structure
 - ✅ **Error Handling**: Proper exit codes for all error cases
 - ✅ **Documentation**: Complete usage examples
+- ✅ **SDK Implementation**: Full SDK with client API
+- ✅ **Storage Backends**: 4 production-ready storage implementations
+- ✅ **Production Features**: Resource management, cleanup, timeouts
 
 ### 11.3 Quality Metrics
 
@@ -713,6 +822,9 @@ def get_runtime_snapshot():
 - ✅ Examples directory with demo program
 - ✅ Command reference documentation
 - ✅ JSON schema documentation
+- ✅ SDK documentation (SDK.md)
+- ✅ Production deployment guide (PRODUCTION.md)
+- ✅ Production usage examples
 
 ### 13.2 Developer Documentation
 
@@ -720,12 +832,41 @@ def get_runtime_snapshot():
 - ✅ Module documentation
 - ✅ Architecture documentation
 - ✅ This PRD document
+- ✅ SDK API reference
+- ✅ Storage interface documentation
+- ✅ Production best practices
 
 ---
 
 ## 14. Version History
 
-### Version 1.0.0 (Current)
+### Version 1.1.0 (Current)
+
+- **SDK Implementation**
+  - High-level client API for programmatic access
+  - Snapshot collection and storage API
+  - Query capabilities with time-range filtering
+
+- **Production Storage Backends**
+  - BoundedMemoryStorage: In-memory storage with size limits and automatic eviction
+  - ManagedFileStorage: File-based storage with cleanup and retention policies
+  - DatabaseStorage: SQL database storage (PostgreSQL, MySQL support)
+  - CloudObjectStorage: Interface for object storage (S3, GCS, Azure Blob)
+
+- **Production Features**
+  - Resource management and limits
+  - Automatic cleanup and retention policies
+  - Context timeout support
+  - Graceful shutdown handling
+  - Thread-safe operations
+  - Container/pod compatibility
+
+- **Documentation**
+  - SDK documentation (SDK.md)
+  - Production deployment guide (PRODUCTION.md)
+  - Production usage examples
+
+### Version 1.0.0
 
 - Initial implementation
 - All core commands (runtime, memory, goroutines, snapshot)
